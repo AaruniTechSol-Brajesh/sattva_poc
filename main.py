@@ -14,7 +14,7 @@ standard_to = StandardScaler()
 @app.route('/extract', methods = ['POST'])
 def extract():
     if request.method == 'POST':
-        path = 'D:\DSProjects\Data Digitization\Invoices'
+        path = 'D:/DSProjects/Data Digitization/Invoices'
         invoice_no, date, customer_id, name, company, address, contact, email, amount = [], [], [], [], [], [], [], [], []
         for i in os.listdir(path):
             file = open(os.getcwd() + '/Invoices/' + str(i), 'rb')
@@ -38,9 +38,9 @@ def extract():
             amount.append(total)
         data = {'Invoice No' : invoice_no, 'Date' : date, 'Customer ID' : customer_id, 'Name' : name, 'Company' : company, 'Address' : address, 'Contact' : contact, 'Email' : email, 'Amount' : amount}
         data = pd.DataFrame(data)
-        df = pd.read_csv('D:\DSProjects\Data Digitization\Invoice Details.csv')
+        df = pd.read_csv('D:/DSProjects/Data Digitization/Invoice Details.csv')
         df = pd.concat([df, data], axis = 0)
-        df.to_csv('D:\DSProjects\Data Digitization\Invoice Details.csv', index = None)        
+        df.to_csv('D:/DSProjects/Data Digitization/Invoice Details.csv', index = None)        
         return render_template('home.html')
     else:
         return render_template('home.html')
