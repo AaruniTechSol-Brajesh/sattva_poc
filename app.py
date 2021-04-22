@@ -14,10 +14,10 @@ standard_to = StandardScaler()
 @app.route('/extract', methods = ['POST'])
 def extract():
     if request.method == 'POST':
-        path = os.getcwd() + '\\Invoices\\'
+        path = os.getcwd() + '/Invoices/'
         invoice_no, date, customer_id, name, company, address, contact, email, amount = [], [], [], [], [], [], [], [], []
         for i in os.listdir(path):
-            file = open(os.getcwd() + '\\Invoices\\' + str(i), 'rb')
+            file = open(os.getcwd() + '/Invoices/' + str(i), 'rb')
             file = pdf.PdfFileReader(file)
             file = file.getPage(0)
             file = file.extractText()
