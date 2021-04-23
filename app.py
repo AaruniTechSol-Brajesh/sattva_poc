@@ -1,11 +1,19 @@
 import os
+import mysql
+import pymysql
 import jsonify
 import requests
 import numpy as np
 import pandas as pd
 import PyPDF2 as pdf
+from sqlalchemy import *
+from dateutil import parser
+from mysql import connector
+from sqlalchemy.sql import *
+from sqlalchemy.orm import sessionmaker
 from sklearn.preprocessing import StandardScaler
 from flask import Flask, render_template, request
+from sqlalchemy.ext.declarative import declarative_base
 app = Flask(__name__, template_folder = 'Templates')
 @app.route('/', methods = ['GET'])
 def Home():    
@@ -14,10 +22,13 @@ standard_to = StandardScaler()
 @app.route('/extract', methods = ['POST'])
 def extract():
     if request.method == 'POST':
-        path = os.getcwd() + '/Invoices'
+        url = 'mysql+mysqlconnector://{user}:{password}@{server}/{database}'.format(user = 'root', password = 'Titun@1994', server = 'localhost', database = 'invoice_details')
+        engine = create_engine(url, echo = True)
+        base = declarative_base()
+        path = os.getcwd() + '\\Invoices\\'
         invoice_no, date, customer_id, name, company, address, contact, email, amount = [], [], [], [], [], [], [], [], []
         for i in os.listdir(path):
-            file = open(os.getcwd() + '/Invoices/' + str(i), 'rb')
+            file = open(os.getcwd() + '\\Invoices\\' + str(i), 'rb')
             file = pdf.PdfFileReader(file)
             file = file.getPage(0)
             file = file.extractText()
@@ -36,11 +47,11 @@ def extract():
             total = total.split(',')
             total = '.'.join(total)
             amount.append(total)
-        data = {'Invoice No' : invoice_no, 'Date' : date, 'Customer ID' : customer_id, 'Name' : name, 'Company' : company, 'Address' : address, 'Contact' : contact, 'Email' : email, 'Amount' : amount}
+        data = {'InvoiceNo' : invoice_no, 'Date' : date, 'CustomerId' : customer_id, 'Name' : name, 'Company' : company, 'Address' : address, 'Contact' : contact, 'Email' : email, 'Amount' : amount}
         data = pd.DataFrame(data)
-        df = pd.read_csv('Invoice Details.csv')
+        df = pd.read_sql_table('invoice_details', engine)
         df = pd.concat([df, data], axis = 0)
-        df.to_csv('Invoice Details.csv', index = None)        
+        df.to_sql(con = engine, name = 'invoice_details', if_exists = 'replace', index = None)        
         return render_template('home.html')
     else:
         return render_template('home.html')
