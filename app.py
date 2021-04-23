@@ -25,14 +25,14 @@ def extract():
         url = 'mysql+mysqlconnector://{user}:{password}@{server}/{database}'.format(user = 'root', password = 'Titun@1994', server = 'localhost', database = 'invoice_details')
         engine = create_engine(url, echo = True)
         base = declarative_base()
-        path = os.getcwd() + '\\Invoices\\'
+        path = os.getcwd() + '/Invoices'
         invoice_no, date, customer_id, name, company, address, contact, email, amount = [], [], [], [], [], [], [], [], []
         for i in os.listdir(path):
-            file = open(os.getcwd() + '\\Invoices\\' + str(i), 'rb')
+            file = open(os.getcwd() + '/Invoices/' + str(i), 'rb')
             file = pdf.PdfFileReader(file)
             file = file.getPage(0)
             file = file.extractText()
-            file = file.split('\n')
+            file = file.split('/n')
             invoice_no.append(file[88])
             date.append(file[6])
             customer_id.append(file[93])
